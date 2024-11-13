@@ -1,0 +1,152 @@
+import telebot
+import random
+import requests
+from telebot import TeleBot
+from telebot import formatting
+from time import sleep, time
+import os
+
+# Замени 'TOKEN' на токен твоего бота
+# Этот токен ты получаешь от BotFather, чтобы бот мог работать
+bot = telebot.TeleBot("7353638091:AAEYS8DPLvcV_J6nKcG0yN5VuFjuqj28l4A")
+
+def get_duck_image_url():    
+        url = 'https://random-d.uk/api/random'
+        res = requests.get(url)
+        data = res.json()
+        return data['url']
+    
+    
+@bot.message_handler(commands=['duck'])
+def duck(message):
+        '''По команде duck вызывает функцию get_duck_image_url и отправляет URL изображения утки'''
+        image_url = get_duck_image_url()
+        bot.reply_to(message, image_url)
+    
+def get_dog_image_url():    
+        url = 'https://random.dog/woof.json'
+        res = requests.get(url)
+        data = res.json()
+        return data['url']
+@bot.message_handler(commands=['dog'])
+def duck(message):
+        '''По команде duck вызывает функцию get_duck_image_url и отправляет URL изображения утки'''
+        image_url = get_dog_image_url()
+        bot.reply_to(message, image_url)
+
+
+
+
+@bot.message_handler(commands=['/anim'])
+def send_mem(message):
+    with open(f'imag/guvoe{str(random.randint())}.png', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+
+
+@bot.message_handler(commands=['photo'])
+def send_img(message): 
+    with open('imag/ывга.png', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+@bot.message_handler(commands=['mem'])
+def send_mem(message):
+    with open(f'imag/mem{str(random.randint(1, 2))}.jpeg', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+
+@bot.message_handler(commands=['photos'])
+def send_img(message): 
+    img = random.choice(os.listdir('imag'))
+    with open(f'imag/{img}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+
+
+
+
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, "Привет! Я твой Telegram бот. Напиши что-нибудь!")
+    
+@bot.message_handler(commands=['hello'])
+def send_hello(message):
+    bot.reply_to(message, "Привет! Как дела?")
+    
+@bot.message_handler(commands=['bye'])
+def send_bye(message):
+    bot.reply_to(message, "Пока! Удачи!")
+    
+@bot.message_handler(commands=['пила'])
+def send_bye(message):
+    bot.reply_to(message, "распили меня болгаркай!!!")
+
+
+
+@bot.message_handler(commands=['game'])
+def send_game(message):
+    msg = bot.send_dice(message.chat.id)
+    if msg.dice.value > 4:
+        bot.send_message(message.chat.id, 'Ты выиграл!')
+    elif msg.dice.value < 3:
+        bot.send_message(message.chat.id, 'полный провал!')
+    else:
+        bot.send_message(message.chat.id, 'Ты проиграл!')
+
+
+
+
+@bot.message_handler(commands=['startt'])
+def start_message(message):
+    bot.send_message(
+        message.chat.id,
+        # function which connects all strings
+        formatting.format_text(
+            formatting.mbold(message.from_user.first_name),
+            formatting.mitalic(message.from_user.first_name),
+            formatting.munderline(message.from_user.first_name),
+            formatting.mstrikethrough(message.from_user.first_name),
+            formatting.mcode(message.from_user.first_name),
+            separator=" " # separator separates all strings
+        ),
+        parse_mode='MarkdownV2'
+    )
+
+    # just a bold text using markdownv2
+    bot.send_message(
+        message.chat.id,
+        formatting.mbold(message.from_user.first_name),
+        parse_mode='MarkdownV2'
+    )
+
+    # html
+    bot.send_message(
+        message.chat.id,
+        formatting.format_text(
+            formatting.hbold(message.from_user.first_name),
+            formatting.hitalic(message.from_user.first_name),
+            formatting.hunderline(message.from_user.first_name),
+            formatting.hstrikethrough(message.from_user.first_name),
+            formatting.hcode(message.from_user.first_name),
+            # hide_link is only for html
+            formatting.hide_link('https://telegra.ph/file/c158e3a6e2a26a160b253.jpg'),
+            separator=" "
+        ),
+        parse_mode='HTML'
+    )
+
+    # just a bold text in html
+    bot.send_message(
+        message.chat.id,
+        formatting.hbold(message.from_user.first_name),
+        parse_mode='HTML'
+    )
+
+bot.infinity_polling()
+
+
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    bot.reply_to(message, message.text)
+    
+bot.polling()
